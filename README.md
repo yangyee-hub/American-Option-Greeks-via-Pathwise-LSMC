@@ -245,7 +245,7 @@ The canonical notebook sequence is:
 2. `notebooks/02_lsmc_baseline_and_fd_delta.ipynb`: establish the finite-difference delta baseline.
 3. `notebooks/03_pathwise_delta.ipynb`: compare pathwise delta against the baseline and the external benchmarks.
 
-Older draft notebooks outside the `notebooks/` directory are not part of the current structure.
+All analysis notebooks in the current project structure live under `notebooks/`.
 
 ## Results to Date
 

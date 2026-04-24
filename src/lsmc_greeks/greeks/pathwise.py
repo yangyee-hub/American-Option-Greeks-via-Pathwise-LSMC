@@ -47,7 +47,7 @@ def estimate_delta_pathwise(
     paths = np.asarray(diagnostics["paths"], dtype=float)
     exercise_index = np.asarray(diagnostics["exercise_index"], dtype=int)
     n_paths = paths.shape[0]
-    n_steps = max(int(round(maturity * config.n_steps_per_year)), 1)
+    n_steps = paths.shape[1] - 1
     dt = maturity / n_steps
 
     exercised_spot = paths[np.arange(n_paths), exercise_index]

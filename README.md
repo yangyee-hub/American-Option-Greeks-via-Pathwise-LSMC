@@ -412,9 +412,9 @@ Both estimators broadly track the expected `N^{-1/2}` Monte Carlo convergence re
 
 #### Robustness Summary
 
-The detailed sweeps live in notebook `03`; the unified comparison consolidates the headline rows:
+The detailed sweeps live in notebook `03`; the unified comparison consolidates the analysis:
 
-| Axis | LSMC finite difference | LSMC pathwise |
+| Aspects | LSMC finite difference | LSMC pathwise |
 | --- | --- | --- |
 | Bump parameter | required, estimate depends on choice | not applicable |
 | Bump sensitivity over `[0.1, 1.0]` | spread of about `0.013` in estimates | invariant |

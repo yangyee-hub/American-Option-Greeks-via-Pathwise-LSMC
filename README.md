@@ -215,7 +215,7 @@ Included work:
 
 This is the current planned split for the next phase of the project. Replace the generic labels with teammate names before final submission if desired.
 
-### Person 1: Pricing Infrastructure Lead
+### Yee Yang: Pricing Infrastructure Lead
 
 Owns:
 
@@ -224,7 +224,7 @@ Owns:
 - `src/lsmc_greeks/utils.py`
 - `notebooks/01_ls2001_replication.ipynb`
 
-### Person 2: LSMC Pricer + Basis/Regression Lead
+### JiaHerng Yap: LSMC Pricer + Basis/Regression Lead
 
 Owns:
 
@@ -232,7 +232,7 @@ Owns:
 - the basis and regression logic inside the pricer,
 - the future Part 3 basis/regression extension notebook, suggested as `04_basis_and_gamma_extension.ipynb` or `04_regression_sensitivity.ipynb`.
 
-### Person 3: Finite-Difference Delta + Extension Lead
+### Chen Ming Hui: Finite-Difference Delta + Extension Lead
 
 Owns:
 
@@ -240,7 +240,7 @@ Owns:
 - `notebooks/02_lsmc_baseline_and_fd_delta.ipynb`
 - the future Part 3 extension estimator notebook, suggested as `05_lr_or_mixed_extension.ipynb`.
 
-### Person 4: Pathwise Delta + Benchmarks + Comparison Lead
+### Yueran Yu: Pathwise Delta + Benchmarks + Comparison Lead
 
 Owns:
 

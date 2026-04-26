@@ -196,7 +196,7 @@ Planned outputs:
 
 Current status:
 
-- not started.
+- Complete. Writing report in README.
 
 ## Planned Work Distribution
 

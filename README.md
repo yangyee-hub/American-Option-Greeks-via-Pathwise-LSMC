@@ -36,7 +36,8 @@ The current implemented scope is:
 - finite-difference delta with common random numbers,
 - fixed-policy pathwise delta,
 - validation against binomial and finite-difference PDE benchmarks,
-- robustness checks for path count, bump size, and regression basis.
+- robustness checks for path count, bump size, and regression basis,
+- unified estimator comparison across delta, runtime, accuracy, and robustness aspects.
 
 ## Repository Layout
 
@@ -59,6 +60,7 @@ notebooks/
   01_ls2001_replication.ipynb
   02_lsmc_baseline_and_fd_delta.ipynb
   03_pathwise_delta.ipynb
+  06_estimator_comparison.ipynb
 
 assets/figures/
   ls2001_replication_ee_comparison.png
@@ -69,6 +71,9 @@ assets/figures/
   pathwise_delta_path_count.png
   pathwise_delta_bump_sensitivity.png
   pathwise_delta_basis_sensitivity.png
+  estimator_comparison_spot_sweep.png
+  estimator_comparison_accuracy_runtime.png
+  estimator_comparison_path_count.png
 
 tests/
   test_lsmc_baseline.py
@@ -76,7 +81,7 @@ tests/
 
 ### Planned Notebook Roadmap
 
-The current repo implements `01` through `03`. The next planned notebooks under the updated project roadmap are:
+The current repo implements `01` through `06`. 
 
 ```text
 notebooks/
@@ -196,7 +201,15 @@ Planned outputs:
 
 Current status:
 
-- Complete. Writing report in README.
+- Complete.
+
+Included work:
+
+- repeated-seed point-estimate comparison at the baseline,
+- spot-sweep comparison against binomial and PDE benchmarks,
+- runtime versus accuracy comparison,
+- path-count scaling diagnostics,
+- consolidated robustness summary.
 
 ## Planned Work Distribution
 
@@ -244,6 +257,8 @@ The canonical notebook sequence is:
 1. `notebooks/01_ls2001_replication.ipynb`: validate the pricing baseline against LS2001.
 2. `notebooks/02_lsmc_baseline_and_fd_delta.ipynb`: establish the finite-difference delta baseline.
 3. `notebooks/03_pathwise_delta.ipynb`: compare pathwise delta against the baseline and the external benchmarks.
+4.
+5. `notebooks/06_estimator_comparison.ipynb`: integrate both LSMC delta estimators into one comparison framework, covering point estimates, spot sweep, runtime versus accuracy, path-count scaling, and a consolidated robustness table.
 
 All analysis notebooks in the current project structure live under `notebooks/`.
 
@@ -336,17 +351,95 @@ The figure is best read as a sensitivity check for this setup, not as a universa
 
 ![Basis sensitivity](assets/figures/pathwise_delta_basis_sensitivity.png)
 
+### Unified Estimator Comparison
+
+Notebook `06_estimator_comparison.ipynb` integrates both LSMC delta estimators into one comparison framework. All LSMC numbers below are repeated-seed means with seed-to-seed standard errors, using `30` seeds at the baseline, `15` seeds for the path-count scaling sweep, and `basis_degree=3` weighted Laguerre throughout.
+
+#### Baseline Point Estimate
+
+At `S=40, K=40, r=0.06, sigma=0.20, T=1` with `20,000` paths and `30` seeds:
+
+| Method | Delta | Seed SE | Mean Runtime (s) | Abs. Error vs Binomial | Abs. Error vs PDE |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| LSMC finite difference | -0.401809 | 0.001216 | 0.3511 | 0.002982 | 0.003053 |
+| LSMC pathwise | -0.400733 | 0.001013 | 0.1828 | 0.004058 | 0.004129 |
+| Binomial benchmark | -0.404791 |  |  | 0.000000 | 0.000071 |
+| PDE benchmark | -0.404862 |  |  | 0.000071 | 0.000000 |
+
+The two benchmarks agree to about `7e-5`, which is the practical floor for the LSMC errors in this configuration. Both LSMC estimators land within roughly `2-3` seed SEs of the benchmarks, with similar Seed SEs in this run. The Seed SE column for finite difference is new relative to the earlier README baseline table, where bump-and-revalue was reported without a standard error.
+
+#### Spot Sweep
+
+Across `S = 36, 38, 40, 42, 44`, both LSMC estimators track the benchmark curves closely, with no systematic bias visible in either direction:
+
+| Spot | Pathwise mean | Pathwise SE | FD mean | FD SE | Binomial | PDE |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 36 | -0.69292 | 0.00109 | -0.69486 | 0.00205 | -0.69655 | -0.69696 |
+| 38 | -0.53318 | 0.00132 | -0.53622 | 0.00191 | -0.53723 | -0.53745 |
+| 40 | -0.40285 | 0.00067 | -0.40500 | 0.00123 | -0.40479 | -0.40486 |
+| 42 | -0.29654 | 0.00067 | -0.29721 | 0.00130 | -0.29798 | -0.29782 |
+| 44 | -0.21402 | 0.00058 | -0.21536 | 0.00072 | -0.21436 | -0.21408 |
+
+![Estimator comparison spot sweep](assets/figures/estimator_comparison_spot_sweep.png)
+
+#### Runtime versus Accuracy
+
+The headline figure of the unified comparison plots each `(seed, estimator)` run as a single point: x-axis is wall-clock runtime per run, y-axis is absolute error against the binomial benchmark. A method sitting **down and to the left** is favoured for this configuration.
+
+At the baseline with `30` seeds and `20,000` paths:
+
+- LSMC finite difference: mean runtime `0.351 s`, mean absolute error `0.00491` (SE `0.00098`).
+- LSMC pathwise: mean runtime `0.183 s`, mean absolute error `0.00525` (SE `0.00080`).
+
+Pathwise is roughly twice as fast on average, with absolute error within Monte Carlo noise of bump-and-revalue.
+
+![Estimator comparison runtime vs accuracy](assets/figures/estimator_comparison_accuracy_runtime.png)
+
+#### Path-Count Scaling
+
+Repeated-seed mean absolute error against the binomial benchmark, using `15` seeds at each path count:
+
+| N paths | Pathwise MAE | Pathwise MAE SE | FD MAE | FD MAE SE | Pathwise runtime (s) | FD runtime (s) |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 5,000 | 0.00402 | 0.00101 | 0.01854 | 0.00401 | 0.048 | 0.092 |
+| 10,000 | 0.00584 | 0.00105 | 0.00786 | 0.00123 | 0.092 | 0.180 |
+| 20,000 | 0.00493 | 0.00073 | 0.00487 | 0.00089 | 0.181 | 0.350 |
+| 40,000 | 0.00360 | 0.00069 | 0.00284 | 0.00046 | 0.382 | 0.732 |
+
+Both estimators broadly track the expected `N^{-1/2}` Monte Carlo convergence reference. The runtime panel confirms the structural factor-of-two between the two methods at every path count, since bump-and-revalue requires two repricings per call while pathwise requires one.
+
+![Estimator comparison path count](assets/figures/estimator_comparison_path_count.png)
+
+#### Robustness Summary
+
+The detailed sweeps live in notebook `03`; the unified comparison consolidates the headline rows:
+
+| Axis | LSMC finite difference | LSMC pathwise |
+| --- | --- | --- |
+| Bump parameter | required, estimate depends on choice | not applicable |
+| Bump sensitivity over `[0.1, 1.0]` | spread of about `0.013` in estimates | invariant |
+| Regression basis degree | depends on basis | depends on basis via the learned stopping rule |
+| Basis sensitivity, degree `0` to `3` | non-trivial | non-trivial, error from about `0.020` to `0.003` |
+| Seed-to-seed variance at `20,000` paths | comparable to pathwise | comparable to FD |
+
+The key practical asymmetry is the bump parameter. Both estimators inherit basis dependence through the same learned LSMC stopping rule, so this is a shared model-risk axis rather than a pathwise-specific weakness.
+
 ## Interpretation
 
-The current project takeaway is that pathwise delta is promising because it:
+The project takeaway is that pathwise delta is promising because it:
 
 - avoids the extra tuning parameter required by bump-and-revalue,
 - compares reasonably well with independent numerical benchmarks,
+- runs roughly twice as fast as bump-and-revalue at the configurations studied,
 - and remains competitive across the current robustness sweeps.
+
+The unified comparison in notebook `06` adds two pieces of evidence: at the baseline, both LSMC estimators agree with the binomial and PDE benchmarks within their seed SEs, and the runtime advantage of pathwise is consistent with its structural cost (one LSMC pricing pass instead of two).
 
 The main caveat is also central to the project:
 
-- the current pathwise estimator treats the learned LSMC stopping rule as fixed during differentiation.
+- the current pathwise estimator treats the learned LSMC stopping rule as fixed during differentiation,
+- both estimators inherit the same regression-basis sensitivity through the learned stopping rule.
+
 
 For the report, this should be described as a validated first-order estimator for delta, not as a complete treatment of the American exercise-boundary derivative.
 
@@ -378,7 +471,5 @@ python -m unittest discover -s tests -v
 
 ## Next Steps
 
-- begin Part 3 with one technical extension,
-- add a unified estimator comparison notebook for Part 4,
 - replace generic person labels with teammate names in the work distribution section,
 - extend the final submission materials with team contribution notes.

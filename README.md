@@ -11,7 +11,7 @@ We study a 1D American put under GBM and build the project in four parts:
 3. one technical extension beyond the core delta study,
 4. a unified numerical comparison across estimators.
 
-The current repository completes the core Part 1 and Part 2 scope. Parts 3 and 4 are planned next and are included below as the current project roadmap.
+The current repository completes the core Part 1 and Part 2 scope, includes an exploratory Part 3 extension, and includes a first integrated Part 4 comparison notebook.
 
 ## Reference Paper
 
@@ -37,7 +37,8 @@ The current implemented scope is:
 - fixed-policy pathwise delta,
 - validation against binomial and finite-difference PDE benchmarks,
 - robustness checks for path count, bump size, and regression basis,
-- unified estimator comparison across delta, runtime, accuracy, and robustness aspects.
+- a unified estimator comparison across delta, runtime, accuracy, and robustness aspects,
+- and an exploratory likelihood-ratio / mixed-estimator extension.
 
 ## Repository Layout
 
@@ -52,6 +53,8 @@ src/lsmc_greeks/
   greeks/
     finite_diff.py
     pathwise.py
+    likelihood.py
+    mixed.py
   benchmarks/
     binomial.py
     finite_difference.py
@@ -60,6 +63,7 @@ notebooks/
   01_ls2001_replication.ipynb
   02_lsmc_baseline_and_fd_delta.ipynb
   03_pathwise_delta.ipynb
+  04_LR_Mixed_Estimator.ipynb
   06_estimator_comparison.ipynb
 
 assets/figures/
@@ -79,9 +83,9 @@ tests/
   test_lsmc_baseline.py
 ```
 
-### Planned Notebook Roadmap
+### Notebook Roadmap
 
-The current repo implements `01` through `06`. 
+The current repo implements `01`, `02`, `03`, `04`, and `06`. Notebook `04` is currently an exploratory extension study. Notebook `05` has not yet been added.
 
 ```text
 notebooks/
@@ -112,12 +116,21 @@ Core dependencies:
 
 The pricing baseline uses Longstaff-Schwartz Monte Carlo for a Bermudan approximation to the American put. The continuation regression is built from weighted Laguerre basis functions, and the implementation supports basis-sensitivity experiments through the `basis_degree` parameter.
 
-### Delta Estimators
+### Core Delta Estimators
 
-Two LSMC delta estimators are currently implemented:
+Two core LSMC delta estimators are currently implemented and used in the main validation/comparison story:
 
 - `src/lsmc_greeks/greeks/finite_diff.py`: central bump-and-revalue with common random numbers,
 - `src/lsmc_greeks/greeks/pathwise.py`: fixed-policy pathwise delta, where the learned LSMC stopping rule is held fixed during differentiation.
+
+### Exploratory Extension Estimators
+
+The repo also includes exploratory Part 3 extensions:
+
+- `src/lsmc_greeks/greeks/likelihood.py`: likelihood-ratio delta/gamma estimator,
+- `src/lsmc_greeks/greeks/mixed.py`: mixed estimator combining pathwise delta with LR gamma.
+
+These extensions are useful for experimentation, but they are not yet presented as being validated to the same standard as the core finite-difference and pathwise delta estimators.
 
 ### Validation Benchmarks
 
@@ -185,7 +198,13 @@ Planned examples:
 
 Current status:
 
-- not started.
+- started as an exploratory extension.
+
+Included work:
+
+- exploratory likelihood-ratio estimator,
+- exploratory mixed estimator,
+- a dedicated extension notebook for those methods.
 
 ### Part 4: Unified Numerical Comparison
 
@@ -201,7 +220,7 @@ Planned outputs:
 
 Current status:
 
-- Complete.
+- implemented.
 
 Included work:
 
@@ -238,7 +257,8 @@ Owns:
 
 - `src/lsmc_greeks/greeks/finite_diff.py`
 - `notebooks/02_lsmc_baseline_and_fd_delta.ipynb`
-- the future Part 3 extension estimator notebook, suggested as `05_lr_or_mixed_extension.ipynb`.
+- the current exploratory extension notebook `04_LR_Mixed_Estimator.ipynb`
+- the future `05_lr_or_mixed_extension.ipynb`, if the extension work is refactored into a more polished follow-up notebook.
 
 ### Yueran Yu: Pathwise Delta + Benchmarks + Comparison Lead
 
@@ -248,7 +268,7 @@ Owns:
 - `src/lsmc_greeks/benchmarks/binomial.py`
 - `src/lsmc_greeks/benchmarks/finite_difference.py`
 - `notebooks/03_pathwise_delta.ipynb`
-- the future unified comparison notebook, suggested as `06_estimator_comparison.ipynb`.
+- the current unified comparison notebook `06_estimator_comparison.ipynb`.
 
 ## Notebook Storyline
 
@@ -257,8 +277,8 @@ The canonical notebook sequence is:
 1. `notebooks/01_ls2001_replication.ipynb`: validate the pricing baseline against LS2001.
 2. `notebooks/02_lsmc_baseline_and_fd_delta.ipynb`: establish the finite-difference delta baseline.
 3. `notebooks/03_pathwise_delta.ipynb`: compare pathwise delta against the baseline and the external benchmarks.
-4.
-5. `notebooks/06_estimator_comparison.ipynb`: integrate both LSMC delta estimators into one comparison framework, covering point estimates, spot sweep, runtime versus accuracy, path-count scaling, and a consolidated robustness table.
+4. `notebooks/04_LR_Mixed_Estimator.ipynb`: exploratory extension notebook for likelihood-ratio and mixed Greek estimators.
+5. `notebooks/06_estimator_comparison.ipynb`: integrate the two core LSMC delta estimators into one comparison framework, covering point estimates, spot sweep, runtime versus accuracy, path-count scaling, and a consolidated robustness table.
 
 All analysis notebooks in the current project structure live under `notebooks/`.
 
@@ -353,7 +373,7 @@ The figure is best read as a sensitivity check for this setup, not as a universa
 
 ### Unified Estimator Comparison
 
-Notebook `06_estimator_comparison.ipynb` integrates both LSMC delta estimators into one comparison framework. All LSMC numbers below are repeated-seed means with seed-to-seed standard errors, using `30` seeds at the baseline, `15` seeds for the path-count scaling sweep, and `basis_degree=3` weighted Laguerre throughout.
+Notebook `06_estimator_comparison.ipynb` integrates the two core LSMC delta estimators into one comparison framework. All LSMC numbers below are repeated-seed means with seed-to-seed standard errors, using `30` seeds at the baseline, `15` seeds for the path-count scaling sweep, and `basis_degree=3` weighted Laguerre throughout.
 
 #### Baseline Point Estimate
 
@@ -435,6 +455,8 @@ The project takeaway is that pathwise delta is promising because it:
 
 The unified comparison in notebook `06` adds two pieces of evidence: at the baseline, both LSMC estimators agree with the binomial and PDE benchmarks within their seed SEs, and the runtime advantage of pathwise is consistent with its structural cost (one LSMC pricing pass instead of two).
 
+The exploratory LR/mixed extension work in notebook `04` is useful as an extension study, but it is not yet part of the core validated project narrative. In its current form, it should be presented as additional exploration rather than as a result on the same footing as the finite-difference and pathwise delta study.
+
 The main caveat is also central to the project:
 
 - the current pathwise estimator treats the learned LSMC stopping rule as fixed during differentiation,
@@ -469,7 +491,3 @@ Run the test suite with:
 python -m unittest discover -s tests -v
 ```
 
-## Next Steps
-
-- replace generic person labels with teammate names in the work distribution section,
-- extend the final submission materials with team contribution notes.

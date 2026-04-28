@@ -1,6 +1,6 @@
 # American Option Greeks via Pathwise LSMC
 
-This repository contains a notebook-first study of American option pricing and delta estimation with Longstaff-Schwartz Monte Carlo (LSMC), focused on numerical accuracy, validation, and computational efficiency.
+This repository contains a notebook-first study of American option pricing and delta estimation with Least Square Monte Carlo (LSMC), focused on numerical accuracy, validation, and computational efficiency.
 
 ## Project Goal
 
@@ -114,7 +114,7 @@ Core dependencies:
 
 ### Pricing
 
-The pricing baseline uses Longstaff-Schwartz Monte Carlo for a Bermudan approximation to the American put. The continuation regression is built from weighted Laguerre basis functions, and the implementation supports basis-sensitivity experiments through the `basis_degree` parameter.
+The pricing baseline uses Least Square Monte Carlo for a Bermudan approximation to the American put. The continuation regression is built from weighted Laguerre basis functions, and the implementation supports basis-sensitivity experiments through the `basis_degree` parameter.
 
 ### Core Delta Estimators
 

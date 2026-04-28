@@ -85,7 +85,7 @@ tests/
 
 ### Notebook Roadmap
 
-The current repo implements `01`, `02`, `03`, `04`, and `06`. Notebook `04` is currently an exploratory extension study. Notebook `05` has not yet been added.
+The current repo implements `01`, `02`, `03`, `04`, and `06`. Notebook `04` is currently an exploratory extension study. Notebook `05` has not yet been added and is planned as a later extension.
 
 ```text
 notebooks/
@@ -147,20 +147,9 @@ The pathwise estimator should be interpreted carefully. The American option valu
 
 Benchmark agreement supports this estimator empirically, but it does not by itself prove that the implementation is computing the exact derivative of the true optimal-stopping value. In the report, this method should be framed as a validated first-order estimator under a fixed-policy assumption.
 
-## Project Roadmap
+## Outline of the Project
 
 ### Part 1: Pricing Baseline
-
-Goal:
-
-- build and validate the American put LSMC pricing engine.
-
-Current status:
-
-- complete.
-
-Included work:
-
 - GBM simulation,
 - payoff logic,
 - LSMC pricing,
@@ -168,107 +157,22 @@ Included work:
 - benchmark setup foundation.
 
 ### Part 2: Delta Baselines
-
-Goal:
-
-- build and validate the core delta estimators.
-
-Current status:
-
-- complete for the agreed core scope.
-
-Included work:
-
 - finite-difference delta with common random numbers,
 - pathwise delta under a fixed-policy assumption,
 - validation against binomial and PDE benchmarks,
 - initial robustness checks.
 
 ### Part 3: Advanced Extension
-
-Goal:
-
-- add one technical extension beyond the core delta study.
-
-Planned examples:
-
-- likelihood-ratio or mixed estimator,
-- gamma-oriented extension,
-- deeper regression or basis study.
-
-Current status:
-
-- started as an exploratory extension.
-
-Included work:
-
 - exploratory likelihood-ratio estimator,
 - exploratory mixed estimator,
 - a dedicated extension notebook for those methods.
 
 ### Part 4: Unified Numerical Comparison
-
-Goal:
-
-- integrate the estimators into one technical benchmark study.
-
-Planned outputs:
-
-- repeated-seed comparison tables,
-- runtime versus accuracy comparison,
-- unified estimator comparison notebook.
-
-Current status:
-
-- implemented.
-
-Included work:
-
 - repeated-seed point-estimate comparison at the baseline,
 - spot-sweep comparison against binomial and PDE benchmarks,
 - runtime versus accuracy comparison,
 - path-count scaling diagnostics,
 - consolidated robustness summary.
-
-## Planned Work Distribution
-
-This is the current planned split for the next phase of the project. Replace the generic labels with teammate names before final submission if desired.
-
-### Yee Yang: Pricing Infrastructure Lead
-
-Owns:
-
-- `src/lsmc_greeks/models.py`
-- `src/lsmc_greeks/payoffs.py`
-- `src/lsmc_greeks/utils.py`
-- `notebooks/01_ls2001_replication.ipynb`
-
-### JiaHerng Yap: LSMC Pricer + Basis/Regression Lead
-
-Owns:
-
-- `src/lsmc_greeks/pricer.py`
-- the basis and regression logic inside the pricer,
-- the future Part 3 basis/regression extension notebook, suggested as `04_basis_and_gamma_extension.ipynb` or `04_regression_sensitivity.ipynb`.
-
-### Chen Ming Hui: Finite-Difference Delta + Extension Lead
-
-Owns:
-
-- `src/lsmc_greeks/greeks/finite_diff.py`
-- `notebooks/02_lsmc_baseline_and_fd_delta.ipynb`
-- the current exploratory extension notebook `04_LR_Mixed_Estimator.ipynb`
-- the future `05_lr_or_mixed_extension.ipynb`, if the extension work is refactored into a more polished follow-up notebook.
-
-### Yueran Yu: Pathwise Delta + Benchmarks + Comparison Lead
-
-Owns:
-
-- `src/lsmc_greeks/greeks/pathwise.py`
-- `src/lsmc_greeks/benchmarks/binomial.py`
-- `src/lsmc_greeks/benchmarks/finite_difference.py`
-- `notebooks/03_pathwise_delta.ipynb`
-- the current unified comparison notebook `06_estimator_comparison.ipynb`.
 
 ## Notebook Storyline
 
@@ -280,9 +184,11 @@ The canonical notebook sequence is:
 4. `notebooks/04_LR_Mixed_Estimator.ipynb`: exploratory extension notebook for likelihood-ratio and mixed Greek estimators.
 5. `notebooks/06_estimator_comparison.ipynb`: integrate the two core LSMC delta estimators into one comparison framework, covering point estimates, spot sweep, runtime versus accuracy, path-count scaling, and a consolidated robustness table.
 
+The planned `05` notebook remains future extension work and has not yet been completed.
+
 All analysis notebooks in the current project structure live under `notebooks/`.
 
-## Results to Date
+## Results
 
 ### Pricing Baseline
 
@@ -490,4 +396,44 @@ Run the test suite with:
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+## Work Distribution
+
+This is the current work split reflected in the repository.
+
+### Yee Yang: Pricing Infrastructure Lead
+
+Owns:
+
+- `src/lsmc_greeks/models.py`
+- `src/lsmc_greeks/payoffs.py`
+- `src/lsmc_greeks/utils.py`
+- `notebooks/01_ls2001_replication.ipynb`
+
+### JiaHerng Yap: LSMC Pricer + Basis/Regression Lead
+
+Owns:
+
+- `src/lsmc_greeks/pricer.py`
+- the basis and regression logic inside the pricer,
+- the future Part 3 basis/regression extension notebook, suggested as `04_basis_and_gamma_extension.ipynb` or `04_regression_sensitivity.ipynb`.
+
+### Chen Ming Hui: Finite-Difference Delta + Extension Lead
+
+Owns:
+
+- `src/lsmc_greeks/greeks/finite_diff.py`
+- `notebooks/02_lsmc_baseline_and_fd_delta.ipynb`
+- the current exploratory extension notebook `04_LR_Mixed_Estimator.ipynb`
+- the future `05_lr_or_mixed_extension.ipynb`, planned as a later extension if the LR/mixed work is refactored into a more polished follow-up notebook.
+
+### Yueran Yu: Pathwise Delta + Benchmarks + Comparison Lead
+
+Owns:
+
+- `src/lsmc_greeks/greeks/pathwise.py`
+- `src/lsmc_greeks/benchmarks/binomial.py`
+- `src/lsmc_greeks/benchmarks/finite_difference.py`
+- `notebooks/03_pathwise_delta.ipynb`
+- the current unified comparison notebook `06_estimator_comparison.ipynb`.
 

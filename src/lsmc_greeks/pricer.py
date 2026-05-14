@@ -11,6 +11,8 @@ from .models import GBMParams, simulate_gbm_paths
 from .payoffs import european_put_payoff, put_intrinsic
 from .utils import normal_cdf, standard_error, to_serializable_dict
 
+from pyfeng import Bsm
+
 
 @dataclass(frozen=True)
 class LSMCConfig:
@@ -31,11 +33,10 @@ class LSMCResult:
     diagnostics: dict[str, object] = field(default_factory=dict)
 
 
+
 def bs_european_put(spot: float, strike: float, rate: float, sigma: float, maturity: float) -> float:
-    """Closed-form Black-Scholes price for a European put."""
-    d1 = (np.log(spot / strike) + (rate + 0.5 * sigma**2) * maturity) / (sigma * np.sqrt(maturity))
-    d2 = d1 - sigma * np.sqrt(maturity)
-    return float(strike * np.exp(-rate * maturity) * normal_cdf(-d2) - spot * normal_cdf(-d1))
+    bsm = Bsm(sigma=sigma, intr=rate, divr=0)
+    return bsm.price(spot=spot, strike=strike, texp=maturity, cp=-1)
 
 
 def laguerre_basis(spot: np.ndarray, strike: float, degree: int = 2) -> np.ndarray:
